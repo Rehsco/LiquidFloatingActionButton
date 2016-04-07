@@ -30,6 +30,11 @@ public enum LiquidFloatingActionButtonAnimateStyle : Int {
 @IBDesignable
 public class LiquidFloatingActionButton : UIView {
 
+    public var startCellPosRatio: CGFloat = 0.0 {
+        didSet {
+            self.baseView.startCellPosRatio = startCellPosRatio
+        }
+    }
     private let internalRadiusRatio: CGFloat = 20.0 / 56.0
     public var cellRadiusRatio: CGFloat      = 0.38
     public var animateStyle: LiquidFloatingActionButtonAnimateStyle = .Up {

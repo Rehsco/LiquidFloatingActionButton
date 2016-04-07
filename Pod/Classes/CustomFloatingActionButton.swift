@@ -28,6 +28,8 @@ public class CustomFloatingActionButton: LiquidFloatingActionButton {
         plusLayer = createPlusLayer(liquidView.bounds)
         liquidView.layer.addSublayer(plusLayer)
         plusLayer.frame = liquidView.bounds
+        
+        self.startCellPosRatio = 0.6
     }
 
 }
