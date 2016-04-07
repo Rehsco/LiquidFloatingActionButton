@@ -267,8 +267,8 @@ class ActionBarBaseView : UIView {
 }
 
 class CircleLiquidBaseView : ActionBarBaseView {
-
-    let openDuration: CGFloat  = 0.6
+    var startCellPosRatio: CGFloat = 0.6
+    let openDuration: CGFloat  = 0.3
     let closeDuration: CGFloat = 0.2
     let viscosity: CGFloat     = 0.65
     var animateStyle: LiquidFloatingActionButtonAnimateStyle = .Up
@@ -278,16 +278,16 @@ class CircleLiquidBaseView : ActionBarBaseView {
             bigEngine?.color = color
         }
     }
-
+    
     var baseLiquid: LiquittableCircle?
     var engine:     SimpleCircleLiquidEngine?
     var bigEngine:  SimpleCircleLiquidEngine?
     var enableShadow = true
-
+    
     private var openingCells: [LiquidFloatingCell] = []
     private var keyDuration: CGFloat = 0
     private var displayLink: CADisplayLink?
-
+    
     override func setup(actionButton: LiquidFloatingActionButton) {
         self.frame = actionButton.frame
         self.center = actionButton.center.minus(actionButton.frame.origin)
@@ -298,8 +298,8 @@ class CircleLiquidBaseView : ActionBarBaseView {
         self.bigEngine = SimpleCircleLiquidEngine(radiusThresh: radius, angleThresh: 0.55)
         bigEngine?.viscosity = viscosity
         self.engine?.color = actionButton.color
-        self.bigEngine?.color = actionButton.color
-
+        self.bigEngine?.color =  actionButton.color
+        
         baseLiquid = LiquittableCircle(center: self.center.minus(self.frame.origin), radius: radius, color: actionButton.color)
         baseLiquid?.clipsToBounds = false
         baseLiquid?.layer.masksToBounds = false
@@ -308,7 +308,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
         layer.masksToBounds = false
         addSubview(baseLiquid!)
     }
-
+    
     func open(cells: [LiquidFloatingCell]) {
         stop()
         displayLink = CADisplayLink(target: self, selector: #selector(CircleLiquidBaseView.didDisplayRefresh(_:)))
@@ -333,7 +333,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
             cell.userInteractionEnabled = false
         }
     }
-
+    
     func didFinishUpdate() {
         if opening {
             for cell in openingCells {
@@ -345,22 +345,22 @@ class CircleLiquidBaseView : ActionBarBaseView {
             }
         }
     }
-
+    
     func update(delay: CGFloat, duration: CGFloat, f: (LiquidFloatingCell, Int, CGFloat) -> ()) {
         if openingCells.isEmpty {
             return
         }
-
+        
         let maxDuration = duration + CGFloat(openingCells.count) * CGFloat(delay)
         let t = keyDuration
         let allRatio = easeInEaseOut(t / maxDuration)
-
+        
         if allRatio >= 1.0 {
             didFinishUpdate()
             stop()
             return
         }
-
+        
         engine?.clear()
         bigEngine?.clear()
         for i in 0..<openingCells.count {
@@ -369,13 +369,16 @@ class CircleLiquidBaseView : ActionBarBaseView {
             let ratio = easeInEaseOut((t - cellDelay) / duration)
             f(liquidCell, i, ratio)
         }
-
+        
         if let firstCell = openingCells.first {
+            firstCell.alpha = allRatio * allRatio * allRatio
             bigEngine?.push(baseLiquid!, other: firstCell)
         }
+        
         for i in 1..<openingCells.count {
             let prev = openingCells[i - 1]
             let cell = openingCells[i]
+            cell.alpha = allRatio * allRatio * allRatio
             engine?.push(prev, other: cell)
         }
         engine?.draw(baseLiquid!)
@@ -384,7 +387,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
     
     func updateOpen() {
         update(0.1, duration: openDuration) { cell, i, ratio in
-            let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : 0
+            let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : self.startCellPosRatio
             let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
             cell.center = self.center.plus(self.differencePoint(distance))
             cell.update(ratio, open: true)
@@ -442,7 +445,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
             updateClose()
         }
     }
-
+    
 }
 
 public class LiquidFloatingCell : LiquittableCircle {

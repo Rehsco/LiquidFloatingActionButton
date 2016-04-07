@@ -18,6 +18,7 @@ public class CustomFloatingActionButton: LiquidFloatingActionButton {
         self.clipsToBounds = false
         
         self.baseView.setup(self)
+        self.baseView.baseLiquid?.removeFromSuperview()
         addSubview(baseView)
         
         liquidView.frame = baseView.frame
