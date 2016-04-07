@@ -71,13 +71,13 @@ public class LiquidFloatingActionButton : UIView {
     
     @IBInspectable public var rotationDegrees: CGFloat = 45.0
 
-    private var plusLayer   = CAShapeLayer()
+    var plusLayer   = CAShapeLayer()
     private let circleLayer = CAShapeLayer()
     
     private var touching = false
 
-    private var baseView = CircleLiquidBaseView()
-    private let liquidView = UIView()
+    var baseView = CircleLiquidBaseView()
+    let liquidView = UIView()
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -209,7 +209,7 @@ public class LiquidFloatingActionButton : UIView {
     }
     
     // MARK: private methods
-    private func setup() {
+    func setup() {
         self.backgroundColor = UIColor.clearColor()
         self.clipsToBounds = false
 
