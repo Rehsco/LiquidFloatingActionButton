@@ -102,9 +102,13 @@ class ViewController: UIViewController, LiquidFloatingActionButtonDataSource, Li
         
         let image = UIImage(named: "ic_art")
         bottomRightButton.image = image
+        bottomRightButton.alwaysShowShadow = true
+        bottomRightButton.useStandardMaterialDesign = true
         
         let floatingFrame2 = CGRect(x: 16, y: 16, width: 56, height: 56)
         let topLeftButton = createButton(floatingFrame2, .Down)
+        topLeftButton.alwaysShowShadow = true
+        topLeftButton.useStandardMaterialDesign = true
 
         self.view.addSubview(bottomRightButton)
         self.view.addSubview(topLeftButton)

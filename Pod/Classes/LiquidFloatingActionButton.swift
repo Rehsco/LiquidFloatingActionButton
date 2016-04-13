@@ -68,6 +68,9 @@ public class LiquidFloatingActionButton : UIView {
     public var useStandardMaterialDesign = false {
         didSet {
             self.baseView.useStandardMaterialDesign = self.useStandardMaterialDesign
+            if self.useStandardMaterialDesign {
+                self.baseView.baseLiquid?.removeFromSuperview()
+            }
         }
     }
     
@@ -390,11 +393,12 @@ class CircleLiquidBaseView : ActionBarBaseView {
         let easeInOutRate = allRatio * allRatio * allRatio
         let alphaColor = opening ? easeInOutRate : 1 - easeInOutRate
         
+        if opening || !self.useStandardMaterialDesign {
         engine?.clear()
         bigEngine?.clear()
         for i in 0..<openingCells.count {
             let liquidCell = openingCells[i]
-            let cellDelay = CGFloat(delay) * CGFloat(i)
+            let cellDelay = self.useStandardMaterialDesign ? CGFloat(delay) : CGFloat(delay) * CGFloat(i)
             let ratio = easeInEaseOut((t - cellDelay) / duration)
             f(liquidCell, i, ratio)
         }
@@ -412,6 +416,13 @@ class CircleLiquidBaseView : ActionBarBaseView {
         }
         engine?.draw(baseLiquid!)
         bigEngine?.draw(baseLiquid!)
+        }
+        else {
+            for i in 0 ..< openingCells.count {
+                let cell = openingCells[i]
+                cell.alpha = alphaColor
+            }
+        }
     }
     
     func updateOpen() {
