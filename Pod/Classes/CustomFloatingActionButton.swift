@@ -12,24 +12,5 @@ public class CustomFloatingActionButton: LiquidFloatingActionButton {
 
     public override func drawRect(rect: CGRect) {
     }
-    
-    override func setup() {
-        self.backgroundColor = UIColor.clearColor()
-        self.clipsToBounds = false
-        
-        self.baseView.setup(self)
-        self.baseView.baseLiquid?.removeFromSuperview()
-        addSubview(baseView)
-        
-        liquidView.frame = baseView.frame
-        liquidView.userInteractionEnabled = false
-        addSubview(liquidView)
-        
-        plusLayer = createPlusLayer(liquidView.bounds)
-        liquidView.layer.addSublayer(plusLayer)
-        plusLayer.frame = liquidView.bounds
-        
-        self.startCellPosRatio = 0.6
-    }
 
 }

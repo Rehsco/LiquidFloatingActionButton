@@ -59,6 +59,18 @@ public class LiquidFloatingActionButton : UIView {
     }
     public private(set) var isClosed: Bool = true
     
+    public var alwaysShowShadow = false {
+        didSet {
+            self.baseView.alwaysShowShadow = self.alwaysShowShadow
+        }
+    }
+    
+    public var useStandardMaterialDesign = false {
+        didSet {
+            self.baseView.useStandardMaterialDesign = self.useStandardMaterialDesign
+        }
+    }
+    
     @IBInspectable public var color: UIColor = UIColor(red: 82 / 255.0, green: 112 / 255.0, blue: 235 / 255.0, alpha: 1.0) {
         didSet {
             baseView.color = color
@@ -219,6 +231,9 @@ public class LiquidFloatingActionButton : UIView {
         self.clipsToBounds = false
 
         baseView.setup(self)
+        if self.useStandardMaterialDesign {
+            self.baseView.baseLiquid?.removeFromSuperview()
+        }
         addSubview(baseView)
         
         liquidView.frame = baseView.frame
@@ -272,7 +287,7 @@ class ActionBarBaseView : UIView {
 }
 
 class CircleLiquidBaseView : ActionBarBaseView {
-    var startCellPosRatio: CGFloat = 0.6
+    var startCellPosRatio: CGFloat = 0.0
     let openDuration: CGFloat  = 0.3
     let closeDuration: CGFloat = 0.2
     let viscosity: CGFloat     = 0.65
@@ -288,6 +303,8 @@ class CircleLiquidBaseView : ActionBarBaseView {
     var engine:     SimpleCircleLiquidEngine?
     var bigEngine:  SimpleCircleLiquidEngine?
     var enableShadow = true
+    var alwaysShowShadow = false
+    var useStandardMaterialDesign = false
     
     private var openingCells: [LiquidFloatingCell] = []
     private var keyDuration: CGFloat = 0
@@ -321,7 +338,9 @@ class CircleLiquidBaseView : ActionBarBaseView {
         opening = true
         for cell in cells {
             cell.layer.removeAllAnimations()
-            cell.layer.eraseShadow()
+            if !self.alwaysShowShadow {
+                cell.layer.eraseShadow()
+            }
             openingCells.append(cell)
         }
     }
@@ -333,7 +352,9 @@ class CircleLiquidBaseView : ActionBarBaseView {
         displayLink?.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
         for cell in cells {
             cell.layer.removeAllAnimations()
-            cell.layer.eraseShadow()
+            if !self.alwaysShowShadow {
+                cell.layer.eraseShadow()
+            }
             openingCells.append(cell)
             cell.userInteractionEnabled = false
         }
@@ -356,7 +377,7 @@ class CircleLiquidBaseView : ActionBarBaseView {
             return
         }
         
-        let maxDuration = duration + CGFloat(openingCells.count) * CGFloat(delay)
+        let maxDuration = self.useStandardMaterialDesign ? duration + CGFloat(delay) : duration + CGFloat(openingCells.count) * CGFloat(delay)
         let t = keyDuration
         let allRatio = easeInEaseOut(t / maxDuration)
         
@@ -365,6 +386,9 @@ class CircleLiquidBaseView : ActionBarBaseView {
             stop()
             return
         }
+        
+        let easeInOutRate = allRatio * allRatio * allRatio
+        let alphaColor = opening ? easeInOutRate : 1 - easeInOutRate
         
         engine?.clear()
         bigEngine?.clear()
@@ -376,14 +400,14 @@ class CircleLiquidBaseView : ActionBarBaseView {
         }
         
         if let firstCell = openingCells.first {
-            firstCell.alpha = allRatio * allRatio * allRatio
+            firstCell.alpha = alphaColor
             bigEngine?.push(baseLiquid!, other: firstCell)
         }
         
         for i in 1..<openingCells.count {
             let prev = openingCells[i - 1]
             let cell = openingCells[i]
-            cell.alpha = allRatio * allRatio * allRatio
+            cell.alpha = alphaColor
             engine?.push(prev, other: cell)
         }
         engine?.draw(baseLiquid!)
@@ -392,18 +416,34 @@ class CircleLiquidBaseView : ActionBarBaseView {
     
     func updateOpen() {
         update(0.1, duration: openDuration) { cell, i, ratio in
-            let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : self.startCellPosRatio
-            let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
-            cell.center = self.center.plus(self.differencePoint(distance))
-            cell.update(ratio, open: true)
+            if self.useStandardMaterialDesign {
+                let posRatio = 0.5 + (ratio / 3.333333333)
+                let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
+                cell.center = self.center.plus(self.differencePoint(distance))
+                cell.update(ratio, open: true)
+            }
+            else {
+                let posRatio = ratio > CGFloat(i) / CGFloat(self.openingCells.count) ? ratio : self.startCellPosRatio
+                let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
+                cell.center = self.center.plus(self.differencePoint(distance))
+                cell.update(ratio, open: true)
+            }
         }
     }
     
     func updateClose() {
         update(0, duration: closeDuration) { cell, i, ratio in
-            let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * (1 - ratio)
-            cell.center = self.center.plus(self.differencePoint(distance))
-            cell.update(ratio, open: false)
+            if self.useStandardMaterialDesign {
+                let posRatio = 0.5 + (ratio / 3.333333333)
+                let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * posRatio
+                cell.center = self.center.plus(self.differencePoint(distance))
+                cell.update(ratio, open: false)
+            }
+            else {
+                let distance = (cell.frame.height * 0.5 + CGFloat(i + 1) * cell.frame.height * 1.5) * (1 - ratio)
+                cell.center = self.center.plus(self.differencePoint(distance))
+                cell.update(ratio, open: false)
+            }
         }
     }
     
