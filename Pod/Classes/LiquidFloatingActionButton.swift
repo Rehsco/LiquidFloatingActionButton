@@ -102,8 +102,6 @@ public class LiquidFloatingActionButton : UIView {
     
     private var touching = false
     
-    private var usingInternalPlusLayer = false
-
     var baseView = CircleLiquidBaseView()
     let liquidView = UIView()
 
@@ -174,8 +172,6 @@ public class LiquidFloatingActionButton : UIView {
     
     /// create, configure & draw the plus layer (override and create your own shape in subclass!)
     public func createPlusLayer(frame: CGRect) -> CAShapeLayer {
-        self.usingInternalPlusLayer = true
-        
         // draw plus shape
         let plusLayer = CAShapeLayer()
         plusLayer.lineCap = kCALineCapRound
@@ -206,18 +202,6 @@ public class LiquidFloatingActionButton : UIView {
         }
     }
 
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-//        self.baseView.frame = self.frame
-//        self.liquidView.frame = self.baseView.frame
-        self.circleLayer.frame = self.liquidView.layer.bounds
-
-        if self.usingInternalPlusLayer {
-            self.plusLayer.frame = self.circleLayer.bounds
-            self.plusLayer.path = self.createPlusLayerPath(self.frame).CGPath
-        }
-    }
-    
     private func drawShadow() {
         if enableShadow {
             circleLayer.appendShadow()
@@ -278,6 +262,13 @@ public class LiquidFloatingActionButton : UIView {
         plusLayer.frame = circleLayer.bounds
     }
 
+    public func resetup() {
+        for subview in self.subviews {
+            subview.removeFromSuperview()
+        }
+        self.setup()
+    }
+    
     private func didTapped() {
         if isClosed {
             open()
