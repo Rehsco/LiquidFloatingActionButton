@@ -101,6 +101,8 @@ public class LiquidFloatingActionButton : UIView {
     private let circleLayer = CAShapeLayer()
     
     private var touching = false
+    
+    private var usingInternalPlusLayer = false
 
     var baseView = CircleLiquidBaseView()
     let liquidView = UIView()
@@ -172,6 +174,7 @@ public class LiquidFloatingActionButton : UIView {
     
     /// create, configure & draw the plus layer (override and create your own shape in subclass!)
     public func createPlusLayer(frame: CGRect) -> CAShapeLayer {
+        self.usingInternalPlusLayer = true
         
         // draw plus shape
         let plusLayer = CAShapeLayer()
@@ -179,18 +182,18 @@ public class LiquidFloatingActionButton : UIView {
         plusLayer.strokeColor = UIColor.whiteColor().CGColor
         plusLayer.lineWidth = 3.0
         
+        plusLayer.path = self.createPlusLayerPath(frame).CGPath
+        return plusLayer
+    }
+    
+    func createPlusLayerPath(frame: CGRect) -> UIBezierPath {
         let path = UIBezierPath()
         path.moveToPoint(CGPoint(x: frame.width * internalRadiusRatio, y: frame.height * 0.5))
         path.addLineToPoint(CGPoint(x: frame.width * (1 - internalRadiusRatio), y: frame.height * 0.5))
         path.moveToPoint(CGPoint(x: frame.width * 0.5, y: frame.height * internalRadiusRatio))
         path.addLineToPoint(CGPoint(x: frame.width * 0.5, y: frame.height * (1 - internalRadiusRatio)))
         
-        plusLayer.path = path.CGPath
-        return plusLayer
-    }
-    
-    public func recreatePlusLayer() {
-        self.plusLayer = self.createPlusLayer(self.frame)
+        return path
     }
     
     private func drawCircle() {
@@ -200,6 +203,13 @@ public class LiquidFloatingActionButton : UIView {
             self.circleLayer.backgroundColor = self.color.white(0.5).CGColor
         } else {
             self.circleLayer.backgroundColor = self.color.CGColor
+        }
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        if self.usingInternalPlusLayer {
+            self.plusLayer.path = self.createPlusLayerPath(self.frame).CGPath
         }
     }
     
