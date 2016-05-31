@@ -266,6 +266,7 @@ public class LiquidFloatingActionButton : UIView {
         for subview in self.subviews {
             subview.removeFromSuperview()
         }
+        self.circleLayer.sublayers?.removeAll()
         self.setup()
     }
     
