@@ -189,6 +189,10 @@ public class LiquidFloatingActionButton : UIView {
         return plusLayer
     }
     
+    public func recreatePlusLayer() {
+        self.plusLayer = self.createPlusLayer(self.frame)
+    }
+    
     private func drawCircle() {
         self.circleLayer.cornerRadius = self.frame.width * 0.5
         self.circleLayer.masksToBounds = true
