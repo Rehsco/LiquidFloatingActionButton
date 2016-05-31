@@ -205,6 +205,11 @@ public class LiquidFloatingActionButton : UIView {
         }
     }
     
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        self.plusLayer = self.createPlusLayer(self.frame)
+    }
+    
     // MARK: Events
     public override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         self.touching = true
