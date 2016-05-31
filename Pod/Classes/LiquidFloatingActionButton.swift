@@ -208,7 +208,12 @@ public class LiquidFloatingActionButton : UIView {
 
     public override func layoutSubviews() {
         super.layoutSubviews()
+//        self.baseView.frame = self.frame
+//        self.liquidView.frame = self.baseView.frame
+        self.circleLayer.frame = self.liquidView.layer.bounds
+
         if self.usingInternalPlusLayer {
+            self.plusLayer.frame = self.circleLayer.bounds
             self.plusLayer.path = self.createPlusLayerPath(self.frame).CGPath
         }
     }
