@@ -97,7 +97,7 @@ public class LiquidFloatingActionButton : UIView {
     
     @IBInspectable public var rotationDegrees: CGFloat = 45.0
 
-    var plusLayer   = CAShapeLayer()
+    var plusLayer = CAShapeLayer()
     private let circleLayer = CAShapeLayer()
     
     private var touching = false
@@ -116,8 +116,8 @@ public class LiquidFloatingActionButton : UIView {
     }
 
     private func insertCell(cell: LiquidFloatingCell) {
-        cell.color = self.childControlsColor;
-        cell.imageView.tintColor = self.childControlsTintColor;
+        cell.color = self.childControlsColor
+        cell.imageView.tintColor = self.childControlsTintColor
         
         cell.radius = self.frame.width * cellRadiusRatio
         cell.center = self.center.minus(self.frame.origin)
@@ -262,14 +262,6 @@ public class LiquidFloatingActionButton : UIView {
         plusLayer.frame = circleLayer.bounds
     }
 
-    public func resetup() {
-        for subview in self.subviews {
-            subview.removeFromSuperview()
-        }
-        self.circleLayer.sublayers?.removeAll()
-        self.setup()
-    }
-    
     private func didTapped() {
         if isClosed {
             open()
@@ -289,7 +281,6 @@ public class LiquidFloatingActionButton : UIView {
             }
         }
     }
-
 }
 
 class ActionBarBaseView : UIView {
