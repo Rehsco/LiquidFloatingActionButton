@@ -220,7 +220,7 @@ public class LiquidFloatingActionButton : UIView {
         didTapped()
     }
     
-    public override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    public override func touchesCancelled(touches: Set<UITouch>, withEvent event: UIEvent?) {
         self.touching = false
         setNeedsDisplay()
     }
@@ -585,7 +585,7 @@ public class LiquidFloatingCell : LiquittableCircle {
         }
     }
     
-    public override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    public override func touchesCancelled(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if responsible {
             color = originalColor
             setNeedsDisplay()
